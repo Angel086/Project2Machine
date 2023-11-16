@@ -1,3 +1,6 @@
+getData.py:
+    - code for reading csv, placing into a dataframe, then spliting into training and test data frames.
+
 Source:
     - https://neptune.ai/blog/predicting-stock-prices-using-machine-learning
     - https://www.geeksforgeeks.org/stock-price-prediction-using-machine-learning-in-python/
