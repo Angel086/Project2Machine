@@ -1,3 +1,5 @@
+Andrew Roda
+
 getData.py:
     - code for reading csv, placing into a dataframe, then spliting into training and test data frames.
 
