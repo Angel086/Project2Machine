@@ -25,33 +25,23 @@ def main():
     test_data = df[2265:]
     #scale data
     scaler = MinMaxScaler()
-    train_data = train_data.values.reshape(-1,1)
-    test_data = test_data.values.reshape(-1,1)
-    # Train the Scaler with training data and smooth data
-    smoothing_window_size = 600
-    for di in range(0,2400,smoothing_window_size):
-        scaler.fit(train_data[di:di+smoothing_window_size,:])
-        train_data[di:di+smoothing_window_size,:] = scaler.transform(train_data[di:di+smoothing_window_size,:])
-
-    # You normalize the last bit of remaining data
-    scaler.fit(train_data[di+smoothing_window_size:,:])
-    train_data[di+smoothing_window_size:,:] = scaler.transform(train_data[di+smoothing_window_size:,:])
+    close_data = df.filter(['Close/Last'])
+    dataset = close_data.values
+    training = int(np.ceil(2265))
+    print(training)
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    scaled_data = scaler.fit_transform(dataset)
+    train_data = scaled_data[0:int(training), :]
+    # prepare feature and labels
+    x_train = []
+    y_train = []
     
-    # Reshape both train and test data
-    train_data = train_data.values.reshape(-1)
-
-    # Normalize test data
-    test_data = scaler.transform(test_data).reshape(-1)
-    # Now perform exponential moving average smoothing
-    # So the data will have a smoother curve than the original ragged data
-    EMA = 0.0
-    gamma = 0.1
-    for ti in range(2265):
-        EMA = gamma*train_data[ti] + (1-gamma)*EMA
-        train_data[ti] = EMA
-
-    # Used for visualization and test purposes
-    all_mid_data = np.concatenate([train_data,test_data],axis=0)
+    for i in range(60, len(train_data)):
+        x_train.append(train_data[i-60:i, 0])
+        y_train.append(train_data[i, 0])
+    
+    x_train, y_train = np.array(x_train), np.array(y_train)
+    x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 
     window_size = 100
     N = train_data.size
@@ -71,6 +61,14 @@ def main():
         std_avg_x.append(date)
 
     print('MSE error for standard averaging: %.5f'%(0.5*np.mean(mse_errors)))
+    plt.figure(figsize = (18,9))
+    plt.plot(range(df.shape[0]),all_mid_data,color='b',label='True')
+    plt.plot(range(window_size,N),std_avg_predictions,color='orange',label='Prediction')
+    #plt.xticks(range(0,df.shape[0],50),df['Date'].loc[::50],rotation=45)
+    plt.xlabel('Date')
+    plt.ylabel('Mid Price')
+    plt.legend(fontsize=18)
+    plt.show()
 
 
 
