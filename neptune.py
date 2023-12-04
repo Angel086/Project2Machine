@@ -1,4 +1,10 @@
 #code for getting data from csv; 
+################
+##
+#Rename file to somethig else, due to needing the neptune library, can cause issues if not renamed
+##
+################
+
 import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
